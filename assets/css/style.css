@@ -1,0 +1,38 @@
+body{
+ /*    background-image: url("../images/train2.jpg");
+    background-repeat: no-repeat;  */
+}
+
+.addTrain:hover{
+    color:red;
+}
+
+.jumbotron {
+    opacity: .9;
+    /*background-color: tan; */
+    color: white;
+    background-image: url("../images/train2.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    padding:100px; 
+}
+
+.schedule{
+    opacity: .6;
+    background-color:lightsteelblue;
+    /*color: white;*/
+}
+.card-header{
+    background-color:lightblue;
+}
+.add {
+    background-color:lightsteelblue;
+    opacity:.6;
+}
+
+.fa-pencil-alt:hover{
+    color:red;
+}
+.fa-trash:hover{
+    color:red;
+}
