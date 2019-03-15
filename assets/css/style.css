@@ -8,8 +8,7 @@ body{
 }
 
 .jumbotron {
-    opacity: .9;
-    /*background-color: tan; */
+    opacity: .8;
     color: white;
     background-image: url("../images/train2.jpg");
     background-repeat: no-repeat;
@@ -25,7 +24,7 @@ body{
 .card-header{
     background-color:lightblue;
 }
-.add {
+.add, update {
     background-color:lightsteelblue;
     opacity:.6;
 }
@@ -35,4 +34,8 @@ body{
 }
 .fa-trash:hover{
     color:red;
+}
+
+.-L_sq6L0zhnDOJe7lIbK{
+    color: red;
 }
