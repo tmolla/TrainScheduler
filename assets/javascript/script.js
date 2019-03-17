@@ -80,7 +80,7 @@ $(document).on("click", ".fa-trash", function(){
 
 $(document).on("click", ".fa-pencil-alt", function(){
     //get record
-    alert("you touched the pencil")
+    //alert("you touched the pencil")
     $(".schedule").hide();
     database.ref($(this).attr('data-key'))
     .once("value").then(function(sp) {
@@ -135,12 +135,11 @@ $(document).ready(function(){
     $(".update").hide();
     $(".schedule").show();
     //timerIntervalID = setInterval(updateTable, 10000);
-    //alert("In ready")
 });
 
 function updateTable(){
     counter++;
-    alert("I was called");
+    //alert("I was called");
     if (counter >= 2){
         clearInterval(timerIntervalID);
     }

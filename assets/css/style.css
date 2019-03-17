@@ -10,7 +10,7 @@ body{
 .jumbotron {
     opacity: .8;
     color: white;
-    background-image: url("../images/train2.jpg");
+    background-image: url("../images/train.jpg");
     background-repeat: no-repeat;
     background-size: cover;
     padding:100px; 
