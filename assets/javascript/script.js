@@ -46,6 +46,7 @@ function displayRecord(sp){
     '<td>'+ minutesAway(tFirstTime, tfrequency) + '</td>'; 
     
     row.addClass(sp.key);
+    row.attr("data-firstTime", tFirstTime)
     row.append(cols);
     $("table tbody").append(row) 
     //console.log(dataArray);
@@ -104,11 +105,13 @@ $(".updateData").on("click", function(){
         dateUpdated: firebase.database.ServerValue.TIMESTAMP
     };
     console.log(updatedSchedule);
-console.log($(this).attr('data-key'))
-   database.ref().child($(this).attr('data-key')).update(updatedSchedule)
+    console.log($(this).attr('data-key'))
+    database.ref().child($(this).attr('data-key')).update(updatedSchedule)
     $(".update").hide();
     $(".schedule").show();
 });
+
+
 $(".addTrain").on("click", function(){
     $(".add").show();
     $(".schedule").hide();
@@ -134,15 +137,22 @@ $(document).ready(function(){
     $(".add").hide();
     $(".update").hide();
     $(".schedule").show();
-    //timerIntervalID = setInterval(updateTable, 10000);
+    timerIntervalID = setInterval(updateTable, 10000);
 });
 
 function updateTable(){
-    counter++;
-    //alert("I was called");
-    if (counter >= 2){
-        clearInterval(timerIntervalID);
-    }
+    // counter++;
+    // //alert("I was called");
+    // if (counter >= 20){
+    //     clearInterval(timerIntervalID);
+    // }
+    
+    $('.table > tbody  > tr').each(function() {
+        var tFirstTime = $(this).attr("data-firstTime");
+        var tfrequency = (($(this).find('td:eq(4)').text()));
+        $(this).find('td:eq(5)').html(nextArrivalTime(tFirstTime, tfrequency));       
+        $(this).find('td:eq(6)').html(minutesAway(tFirstTime, tfrequency));
+    });
 }
 $(document).on('click', 'tr', function(){
     //alert("you clicked on a row");
