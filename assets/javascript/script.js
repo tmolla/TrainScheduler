@@ -28,6 +28,12 @@ function minutesAway(firstTime, frequency) {
 function nextArrivalTime(firstTime, frequency){
     return(moment().add(minutesAway(firstTime, frequency), "minutes").format("hh:mm"));
 }
+
+function validateFormData(){
+    var validate = false;
+    return validate;
+}
+
 function displayRecord(sp){
     var row = {}
     row = {key:sp.key, value:sp.val()};
@@ -53,7 +59,9 @@ function displayRecord(sp){
 }
 
 $(".addData").on("click", function (event) {
+
     event.preventDefault();
+    var validationError = false;
 
     var newTrain = {
        name: $("#formGroupTrainName").val().trim(),
@@ -62,11 +70,56 @@ $(".addData").on("click", function (event) {
        frequency: $("#formGroupFrequency").val().trim(),
        dateAdded: firebase.database.ServerValue.TIMESTAMP
     };
-    database.ref().push(newTrain);
 
-    $(".add").hide();
-    $(".update").hide();
-    $(".schedule").show();
+    if (!(newTrain.name.length > 0)) {  // validate name
+        $("#trainNameError").html("Plase enter tain name.");
+        validationError = true;
+    }
+    else{
+        $("#trainNameError").html("");
+    }
+    
+    if(!(newTrain.destination.length > 0)) { //validate destination
+        $("#trainDestinationError").html("Plase enter Tain destination.");
+        validationError = true;
+    }  
+    else{
+        $("#trainDestinationError").html("");
+    }
+
+    if (!(newTrain.firstTime.length > 0)){ // validate First time
+        $("#trainFirstTimeError").html("Plase enter train first time in military format (HH:MM).");
+        validationError = true;
+    } else if (!((newTrain.firstTime.length == 5) &&   // must be 5 chars long
+                  (!(isNaN(newTrain.firstTime.substring(0,2)))) &&  // must have 2 digits followed by
+                  (newTrain.firstTime.substring(2,3) == ":") &&     // the character ":" followed by
+                  (!(isNaN(newTrain.firstTime.substring(3,5)))))){ // 2 digits
+        validationError = true;
+        $("#trainFirstTimeError").html("Train first time must be a valid in military format (HH:MM).");
+    }else{
+        $("#trainFirstTimeError").html("");
+    }
+
+    if (!(newTrain.frequency.length > 0)){ //validate frequency
+        $("#trainFrequencyError").html("Plase enter frequency in minutes (MM)");
+        validationError = true;
+    } 
+    else if (!((newTrain.frequency.length == 2) && (!(isNaN(newTrain.frequency))))){
+        //alert(!((newTrain.frequency.length == 2) && (!(isNaN(newTrain.frequency)))))
+        $("#trainFrequencyError").html("Frequency must be a valid number with 2 digits (MM)");
+        validationError = true;
+    }
+    else {
+        $("#trainFrequencyError").html("");
+    }
+
+    if (!validationError) {
+        database.ref().push(newTrain);
+        $(".add").hide();
+        $(".update").hide();
+        $(".schedule").show();
+    }
+    validationError = false;
 });
 
 $(document).on("click", ".fa-trash", function(){
@@ -141,12 +194,6 @@ $(document).ready(function(){
 });
 
 function updateTable(){
-    // counter++;
-    // //alert("I was called");
-    // if (counter >= 20){
-    //     clearInterval(timerIntervalID);
-    // }
-    
     $('.table > tbody  > tr').each(function() {
         var tFirstTime = $(this).attr("data-firstTime");
         var tfrequency = (($(this).find('td:eq(4)').text()));

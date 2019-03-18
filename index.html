@@ -46,25 +46,25 @@
         <div class="card add">
             <h5 class="card-header">Add Train</h5>
             <div class="card-body">
-                <form>
+                <form id=contact-form>
                     <div class="form-group">
                         <label for="formGroupTrainName">Train Name</label>
-                        <input type="text" class="form-control" id="formGroupTrainName" placeholder="Enter train name">
+                        <input type="text" class="form-control" id="formGroupTrainName" placeholder="Enter train name"><span id=trainNameError></span>
                         <div class="invalid-feedback">
                           Please provide train name.
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="formGroupDestination">Destination</label>
-                        <input type="text" class="form-control" id="formGroupDestination" placeholder="Enter destination">
+                        <input type="text" class="form-control" id="formGroupDestination" placeholder="Enter destination"><span id=trainDestinationError></span>
                     </div>
                     <div class="form-group">
                         <label for="formGroupFirstTrainTime">First Train Time (HH:mm - military time)</label>
-                        <input type="text" class="form-control" id="formGroupFirstTrainTime" placeholder="Enter first train time in military time (HH:mm))">
+                        <input type="text" class="form-control" id="formGroupFirstTrainTime" placeholder="Enter first train time in military time (HH:mm))"><span id=trainFirstTimeError></span>
                     </div>
                     <div class="form-group">
                         <label for="formGroupFrequency">Frequency (min)</label>
-                        <input type="text" class="form-control" id="formGroupFrequency" placeholder="Enter frequency in mimutes">
+                        <input type="text" class="form-control" id="formGroupFrequency" placeholder="Enter frequency in mimutes"><span id=trainFrequencyError></span>
                     </div>
                     <button type="Add" class="btn btn-primary addData">Submit</button>
                 </form>
@@ -74,7 +74,7 @@
         <div class="card update">
                 <h5 class="card-header">Update Schedule</h5>
                 <div class="card-body">
-                    <form>
+                    <form >
                         <div class="form-group">
                             <label for="formGroupUpdateTrainName">Train Name</label>
                             <input type="text" class="form-control" id="formGroupUpdateTrainName" placeholder="Enter train name">

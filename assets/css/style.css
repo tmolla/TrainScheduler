@@ -29,7 +29,10 @@ body{
     background-color:lightsteelblue;
     opacity:.6;
 }
-
+#trainNameError,
+#trainDestinationError,
+#trainFirstTimeError,
+#trainFrequencyError,
 .fa-pencil-alt:hover{
     color:red;
 }
