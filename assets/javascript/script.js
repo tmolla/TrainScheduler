@@ -11,8 +11,8 @@
 
 var database = firebase.database();
 var timerIntervalID = "";
+var newRecord = false;
 var counter = 0
-var dataArray = [];
 
 function calculateTimeRemainder(firstTime, frequency){
     // First Time (pushed back 1 year to make sure it comes before current time)
@@ -29,17 +29,9 @@ function nextArrivalTime(firstTime, frequency){
     return(moment().add(minutesAway(firstTime, frequency), "minutes").format("hh:mm"));
 }
 
-function validateFormData(){
-    var validate = false;
-    return validate;
-}
 
 function displayRecord(sp){
-    var row = {}
-    row = {key:sp.key, value:sp.val()};
-
-    //push each record into an array so we can use it with setInterval
-    dataArray.push(row);
+    
     var tfrequency = sp.val().frequency;
     var tFirstTime = sp.val().firstTime; 
     var row = $("<tr>");
@@ -55,22 +47,11 @@ function displayRecord(sp){
     row.attr("data-firstTime", tFirstTime)
     row.append(cols);
     $("table tbody").append(row) 
-    //console.log(dataArray);
 }
 
-$(".addData").on("click", function (event) {
-
-    event.preventDefault();
+function validate(newTrain){
     var validationError = false;
-
-    var newTrain = {
-       name: $("#formGroupTrainName").val().trim(),
-       destination: $("#formGroupDestination").val().trim(),
-       firstTime: $("#formGroupFirstTrainTime").val().trim(),
-       frequency: $("#formGroupFrequency").val().trim(),
-       dateAdded: firebase.database.ServerValue.TIMESTAMP
-    };
-
+    
     if (!(newTrain.name.length > 0)) {  // validate name
         $("#trainNameError").html("Plase enter tain name.");
         validationError = true;
@@ -105,7 +86,6 @@ $(".addData").on("click", function (event) {
         validationError = true;
     } 
     else if (!((newTrain.frequency.length == 2) && (!(isNaN(newTrain.frequency))))){
-        //alert(!((newTrain.frequency.length == 2) && (!(isNaN(newTrain.frequency)))))
         $("#trainFrequencyError").html("Frequency must be a valid number with 2 digits (MM)");
         validationError = true;
     }
@@ -113,11 +93,33 @@ $(".addData").on("click", function (event) {
         $("#trainFrequencyError").html("");
     }
 
-    if (!validationError) {
-        database.ref().push(newTrain);
-        $(".add").hide();
-        $(".update").hide();
-        $(".schedule").show();
+    return(!validationError)
+}
+
+$(".addData").on("click", function (event) {
+
+    event.preventDefault();
+
+    var newTrain = {
+       name: $("#formGroupTrainName").val().trim(),
+       destination: $("#formGroupDestination").val().trim(),
+       firstTime: $("#formGroupFirstTrainTime").val().trim(),
+       frequency: $("#formGroupFrequency").val().trim(),
+       lastUpdated: firebase.database.ServerValue.TIMESTAMP
+    };
+
+    if (validate(newTrain)) {
+        if (newRecord){
+            database.ref().push(newTrain);
+            $(".add").hide();
+            $(".schedule").show();
+        } else {
+            console.log("updating from .addData")
+            database.ref().child($(this).attr('data-key')).update(newTrain)
+            $('.'+ $(this).attr('data-key')).remove()
+            $(".add").hide();
+            $(".schedule").show();
+        }
     }
     validationError = false;
 });
@@ -134,45 +136,28 @@ $(document).on("click", ".fa-trash", function(){
 
 $(document).on("click", ".fa-pencil-alt", function(){
     //get record
-    //alert("you touched the pencil")
+    newRecord = false;
     $(".schedule").hide();
     database.ref($(this).attr('data-key'))
     .once("value").then(function(sp) {
-        $("#formGroupUpdateTrainName").val(sp.val().name);
-        $("#formGroupUpdateDestination").val(sp.val().destination);
-        $("#formGroupUpdateFirstTrainTime").val(sp.val().firstTime);
-        $("#formGroupUpdateFrequency").val(sp.val().frequency);
-        //console.log(sp.val().name);
-        //console.log(sp.val().destination);
+        $("#formGroupTrainName").val(sp.val().name);
+        $("#formGroupDestination").val(sp.val().destination);
+        $("#formGroupFirstTrainTime").val(sp.val().firstTime);
+        $("#formGroupFrequency").val(sp.val().frequency);
       });
-    $(".updateData").attr("data-key", $(this).attr('data-key'));
-    $(".update").show();
-});
-
-$(".updateData").on("click", function(){
-    var updatedSchedule = {
-        name: $("#formGroupUpdateTrainName").val().trim(),
-        destination: $("#formGroupUpdateDestination").val().trim(),
-        firstTime: $("#formGroupUpdateFirstTrainTime").val().trim(),
-        frequency: $("#formGroupUpdateFrequency").val().trim(),
-        dateUpdated: firebase.database.ServerValue.TIMESTAMP
-    };
-    console.log(updatedSchedule);
-    console.log($(this).attr('data-key'))
-    database.ref().child($(this).attr('data-key')).update(updatedSchedule)
-    $(".update").hide();
-    $(".schedule").show();
+    $(".addData").attr("data-key", $(this).attr('data-key'));
+    $(".add").show();
 });
 
 
 $(".addTrain").on("click", function(){
+    newRecord = true;
     $(".add").show();
     $(".schedule").hide();
 })
 
 
 database.ref().on("child_added", function(sp) {
-    //console.log(sp.key);
     displayRecord(sp);
 }, function(error) {
     console.log("Error: " + error.code);
@@ -184,6 +169,7 @@ database.ref().on("child_removed", function(sp){
 
 database.ref().on("child_changed", function(sp){
     //alert("Hey child changed " + sp.key)
+    displayRecord(sp);
 });
 
 $(document).ready(function(){
@@ -201,6 +187,4 @@ function updateTable(){
         $(this).find('td:eq(6)').html(minutesAway(tFirstTime, tfrequency));
     });
 }
-$(document).on('click', 'tr', function(){
-    //alert("you clicked on a row");
-});
+
