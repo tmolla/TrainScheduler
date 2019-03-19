@@ -42,7 +42,6 @@ function displayRecord(sp){
     '<td>'+ tfrequency + '</td>' +
     '<td>'+ nextArrivalTime(tFirstTime, tfrequency) + '</td>' +
     '<td>'+ minutesAway(tFirstTime, tfrequency) + '</td>'; 
-    
     row.addClass(sp.key);
     row.attr("data-firstTime", tFirstTime)
     row.append(cols);
@@ -110,13 +109,15 @@ $(".addData").on("click", function (event) {
 
     if (validate(newTrain)) {
         if (newRecord){
+            console.log("Adding New record");
             database.ref().push(newTrain);
             $(".add").hide();
             $(".schedule").show();
         } else {
             console.log("updating from .addData")
+            $('.'+$(this).attr('data-key')).remove()
             database.ref().child($(this).attr('data-key')).update(newTrain)
-            $('.'+ $(this).attr('data-key')).remove()
+            database.ref($(this).attr('data-key')).once("value").then(function(sp) {displayRecord(sp)});
             $(".add").hide();
             $(".schedule").show();
         }
@@ -149,9 +150,17 @@ $(document).on("click", ".fa-pencil-alt", function(){
     $(".add").show();
 });
 
+$(".cancelBtn").on("click", function(){
+    $(".add").hide();
+    $(".schedule").show();
+})
 
 $(".addTrain").on("click", function(){
     newRecord = true;
+    $("#formGroupTrainName").val("");
+    $("#formGroupDestination").val("");
+    $("#formGroupFirstTrainTime").val("");
+    $("#formGroupFrequency").val("");
     $(".add").show();
     $(".schedule").hide();
 })
@@ -159,18 +168,21 @@ $(".addTrain").on("click", function(){
 
 database.ref().on("child_added", function(sp) {
     displayRecord(sp);
+    //console.log("in added event ")
 }, function(error) {
     console.log("Error: " + error.code);
 });
 
 database.ref().on("child_removed", function(sp){
+    //console.log("in remove event")
     $('.'+sp.key).remove()
 });
 
-database.ref().on("child_changed", function(sp){
+/* database.ref().on("child_changed", function(sp){
+    console.log("in changed event")
     //alert("Hey child changed " + sp.key)
-    displayRecord(sp);
-});
+    //displayRecord(sp);
+}); */
 
 $(document).ready(function(){
     $(".add").hide();
